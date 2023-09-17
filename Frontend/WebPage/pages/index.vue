@@ -16,10 +16,11 @@
             </template>
             <form @submit.prevent="handleFileUpload">
               <input type="file" ref="fileInput" accept=".csv">
-              <b-button style="margin-left: 5%;" v-b-modal.modal-prevent-closing pill variant="info" type="submit">Cargar CSV</b-button>
+              <b-button style="margin-left: 5%;" v-b-modal.modal-prevent-closing pill variant="info" type="submit">Cargar
+                CSV</b-button>
               <br>
               <br>
-              <b-button  block @click="$bvModal.hide('bv-modal-example')" pill variant="danger">Cerrar</b-button>
+              <b-button block @click="$bvModal.hide('bv-modal-example')" pill variant="danger">Cerrar</b-button>
             </form>
           </b-modal>
         </div>
@@ -30,7 +31,8 @@
 
 <script>
 import axios from 'axios';
-export default {
+export default { 
+
   methods: {
     async handleFileUpload() {
       const fileInput = this.$refs.fileInput;
@@ -51,16 +53,33 @@ export default {
                 'Content-Type': 'multipart/form-data'
               }
             });
-            alert('Archivo CSV enviado correctamente.');
+            this.$swal(
+              'Excelente!',
+              'Archivo CSV enviado correctamente.',
+              'success'
+            )
+            setTimeout(() => {
+              window.open("./data_page", "_self");
+            }, 1500);
           } catch (error) {
             console.error('Error al enviar el archivo CSV:', error);
-            alert('Error al enviar el archivo CSV.');
+            this.$swal({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Error al enviar el archivo CSV!',
+            })
           }
         } else {
-          alert('Selecciona un archivo CSV válido.');
+          this.$swal({
+            icon: 'info',
+            text: 'Selecciona un archivo CSV válido.',
+          })
         }
       } else {
-        this.$swal('Selecciona un archivo antes de cargarlo.');
+        this.$swal({
+          icon: 'info',
+          text: 'Selecciona un archivo antes de cargarlo.',
+        })
       }
     },
   }
@@ -72,3 +91,7 @@ export default {
 
 
 
+
+
+
+  
