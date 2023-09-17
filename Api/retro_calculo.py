@@ -1,10 +1,12 @@
 import pandas as pd
+import json
 
-df = None
+def realizar_analisis():
+    df = pd.read_pickle('dataframe.pkl')
 
-if df is None:
-    pass
-else:
-    df = pd.read_pickle('datos_dataframe.pkl')
+    columna = df['SalePrice']
 
-columna = df['SalePrice']
+    columna_list = columna.tolist()
+    json_columna = json.dumps(columna_list)
+
+    return json_columna

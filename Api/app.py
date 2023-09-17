@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
-#import retro_calculo as data
+import retro_calculo as data
 
 app = Flask(__name__)
 CORS(app)
@@ -9,7 +9,8 @@ CORS(app)
 @app.route('/api/get_data', methods=['GET'])
 
 def get_data():
-    mensaje = {'mensaje': 'Obtener datos'}
+    resultados = data.realizar_analisis()
+    mensaje = {'mensaje': resultados}
     return jsonify(mensaje)
 
 @app.route('/api/cargar_csv', methods=['POST'])
