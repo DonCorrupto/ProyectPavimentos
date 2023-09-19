@@ -6,6 +6,9 @@
 
 <style>
 .nuxt-logo {
-  height: 180px;
+  height: 50px;
+  position: absolute;
+  left: 30%;
+  top: 1%;
 }
 </style>
