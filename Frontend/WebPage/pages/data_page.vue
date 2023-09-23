@@ -32,7 +32,7 @@
                 <b-table responsive :items="normalizacion_carga"></b-table>
             </div>
             <div v-if="contenido == 'boton3'">
-                <h1>Normalizacion por temperatura contenido boton 3</h1>
+                <b-table responsive :items="normalizacion_temperatura"></b-table>
             </div>
         </div>
     </div>
@@ -48,6 +48,7 @@ export default {
             contenido: null,
             normalizacion_unidades: [],
             normalizacion_carga: [],
+            normalizacion_temperatura: [],
         }
     },
 
@@ -67,6 +68,7 @@ export default {
                 console.log(response.data);
                 this.normalizacion_unidades = JSON.parse(response.data.normalizacion_unidades)
                 this.normalizacion_carga = JSON.parse(response.data.normalizacion_carga)
+                this.normalizacion_temperatura = JSON.parse(response.data.normalizacion_temperatura)
             } catch (error) {
                 console.error(error);
             }
