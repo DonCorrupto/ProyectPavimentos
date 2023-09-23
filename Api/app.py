@@ -9,9 +9,11 @@ CORS(app)
 @app.route('/api/get_data', methods=['GET'])
 
 def get_data():
-    resultados = data.realizar_analisis()
-    mensaje = {'mensaje': resultados}
-    return jsonify(mensaje)
+    geofonos = data.geofonos()
+    normalizacion_unidades = data.normalizacion_unidades()
+    normalizacion_carga = data.normalizacion_carga()
+    mensaje = {'geofonos': geofonos, 'normalizacion_unidades': normalizacion_unidades, 'normalizacion_carga': normalizacion_carga}
+    return mensaje
 
 @app.route('/api/cargar_csv', methods=['POST'])
 

@@ -6,12 +6,17 @@
             <div class="menu">
                 <li @click="cambiarContenido('boton1')" class="button">
                     <span class="text">
-                        Pagina 1
+                        Normalización por unidades
                     </span>
                 </li>
                 <li @click="cambiarContenido('boton2')" class="button">
                     <span class="text">
-                        Pagina 2
+                        Normalización por carga
+                    </span>
+                </li>
+                <li @click="cambiarContenido('boton3')" class="button">
+                    <span class="text">
+                        Normalización por temperatura
                     </span>
                 </li>
             </div>
@@ -21,10 +26,13 @@
         <!-- Contenido principal -->
         <div class="content">
             <div v-if="contenido == 'boton1'">
-                <h1>Contenido de la Pagina 1</h1>
+                <b-table responsive :items="normalizacion_unidades"></b-table>
             </div>
             <div v-if="contenido == 'boton2'">
-                <h1>Contenido de la Pagina 2</h1>
+                <b-table responsive :items="normalizacion_carga"></b-table>
+            </div>
+            <div v-if="contenido == 'boton3'">
+                <h1>Normalizacion por temperatura contenido boton 3</h1>
             </div>
         </div>
     </div>
@@ -32,12 +40,14 @@
 
 <script>
 import axios from 'axios';
-import NuxtLogo from '~/components/NuxtLogo.vue';
+
 export default {
 
     data() {
         return {
             contenido: null,
+            normalizacion_unidades: [],
+            normalizacion_carga: [],
         }
     },
 
@@ -51,14 +61,17 @@ export default {
         },
 
         async getData() {
-            setTimeout(() => {
+            try {
                 const url = "http://127.0.0.1:5000/api/get_data";
-                const response = axios.get(url);
-                console.log(response);
-            }, 3000);
+                const response = await axios.get(url);
+                console.log(response.data);
+                this.normalizacion_unidades = JSON.parse(response.data.normalizacion_unidades)
+                this.normalizacion_carga = JSON.parse(response.data.normalizacion_carga)
+            } catch (error) {
+                console.error(error);
+            }
         }
     },
-    components: { NuxtLogo }
 }
 </script>
 
