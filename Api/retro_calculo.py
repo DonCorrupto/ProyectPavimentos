@@ -147,25 +147,29 @@ def modulo_resiliente():
             if opcion == 1 or opcion == 2 or opcion == 3:
                 df_normalized = aplicar_opcion(df_normalized, opcion)
 
-                columnas_D = sorted([col for col in df_normalized.columns if col.startswith('D')])
-
-                # Encuentra el índice de la columna 'D2'
-                indice_D2 = columnas_D.index('D2')
-
                 # Crea una lista para almacenar las distancias de los geófonos
                 with open('distancia_D.txt', 'r') as file:
-                    distancias = file.read()
-                    distancias = distancias.split()
-                    distancias = [int(num) for num in distancias]
+                    contenido = file.read()
+                    distancias = [int(numero) for numero in contenido.split(',')]
 
+                    columnas_D = sorted([col for col in df_normalized.columns if col.startswith('D')])
+
+                    # Encuentra el índice de la columna 'D2'
+                    indice_D2 = columnas_D.index('D2')
+
+                    dataframe_unificado = pd.DataFrame()
+
+                    # Realiza el cálculo y crea tablas separadas para cada columna D desde D2 hasta el penúltimo
                     for i, columna_D in enumerate(columnas_D[indice_D2:-1], start=2):  # Comienza desde D2 hasta el penúltimo
                         resultado = (2.4 * 40) / (df_normalized[columna_D] * distancias[i - 2] * 2.54)
                         df_resultado = pd.DataFrame({f'Modulo resiliente {columna_D}': resultado})
 
                         df_resultado.drop(columns=['Modulo resiliente Distancia'], inplace=True, errors='ignore')
 
-                        if not df_resultado.empty:
-                            json_data = df_normalized.to_json(orient='records')
-                            return json_data
+                        dataframe_unificado = pd.concat([dataframe_unificado, df_resultado], axis=1)
+
+                    if not dataframe_unificado.empty:
+                        json_data = dataframe_unificado.to_json(orient='records')
+                        return json_data
     except FileNotFoundError:
         return None

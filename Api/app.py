@@ -17,6 +17,7 @@ def get_data():
     mensaje = {'geofonos': geofonos, 'normalizacion_unidades': normalizacion_unidades, 'normalizacion_carga': normalizacion_carga, 'normalizacion_temperatura': temperatura}
     return mensaje
 
+
 @app.route('/api/get_modulo_resiliente', methods=['GET'])
 
 def get_modulo_resiliente():
@@ -24,6 +25,7 @@ def get_modulo_resiliente():
     mensaje = {'modulo_resiliente': modulo_resiliente}
     return mensaje
 
+    
 @app.route('/api/cargar_csv', methods=['POST'])
 
 def cargar_csv():
@@ -40,15 +42,11 @@ def cargar_csv():
 
     return jsonify({'mensaje': 'Datos del CSV procesados correctamente'})
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 
 @app.route('/api/distancia_geofono', methods=['POST'])
 
 def distancia_geofono():
     distancia_D = request.form.get('distancia_D')
-
     with open('distancia_D.txt', 'w') as file:
         file.write(distancia_D)
 

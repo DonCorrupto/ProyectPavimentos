@@ -40,13 +40,16 @@
             <div v-if="contenido == 'boton3'">
                 <b-table responsive :items="normalizacion_temperatura"></b-table>
             </div>
-            <div v-if="contenido == 'boton4'">
+            <div v-if="contenido == 'boton4' && boton4_contenido == 0">
                 <h2>Campos de entrada generados:</h2>
                 <div v-for="(input, index) in distancia_D" :key="index + 2">
                     <input type="text" v-model="inputValues[index]" :name="`input_${index + 2}`"
                         :placeholder="`D${index + 2}`">
                 </div>
-                <button @click="guardarValores">Guardar Valores</button>
+                <button @click="guardarValores(1)">Guardar Valores</button>
+            </div>
+            <div v-else-if="boton4_contenido == 1">
+                <b-table responsive :items="distancia_D"></b-table>
             </div>
         </div>
     </div>
@@ -60,6 +63,7 @@ export default {
     data() {
         return {
             contenido: null,
+            boton4_contenido: 0,
             normalizacion_unidades: [],
             normalizacion_carga: [],
             normalizacion_temperatura: [],
@@ -75,7 +79,7 @@ export default {
     },
     methods: {
 
-        async guardarValores() {
+        async guardarValores(valor) {
             //console.log(this.inputValues);
             const formData = new FormData();
             formData.append('distancia_D', this.inputValues);
@@ -91,6 +95,15 @@ export default {
                     'Archivo CSV enviado correctamente.',
                     'success'
                 )
+                try {
+                    const url = "http://127.0.0.1:5000/api/get_modulo_resiliente";
+                    const response = await axios.get(url);
+                    console.log(response.data);
+                    this.distancia_D = JSON.parse(response.data.modulo_resiliente);
+                    this.boton4_contenido = valor
+                } catch (error) {
+                    console.error(error);
+                }
             } catch (error) {
                 console.error('Error al enviar el archivo CSV:', error);
                 this.$swal({
