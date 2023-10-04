@@ -41,15 +41,22 @@
                 <b-table responsive :items="normalizacion_temperatura"></b-table>
             </div>
             <div v-if="contenido == 'boton4' && boton4_contenido == 0">
-                <h2>Campos de entrada generados:</h2>
+                <h2>Ingrese la distancia de cada geofono en pulgadas</h2>
                 <div v-for="(input, index) in distancia_D" :key="index + 2">
                     <input type="text" v-model="inputValues[index]" :name="`input_${index + 2}`"
                         :placeholder="`D${index + 2}`">
                 </div>
+                <br>
                 <button @click="guardarValores(1)">Guardar Valores</button>
             </div>
             <div v-else-if="boton4_contenido == 1">
-                <b-table responsive :items="distancia_D"></b-table>
+                <div v-for="(subarray, index) in distancia_D" :key="index">
+                    <h2>Modulo Resiliente {{ index + 2 }}</h2>
+                    <b-table responsive :items="subarray" :fields="fields" :per-page="rows"
+                        :current-page="currentPage[index]"></b-table>
+                    <b-pagination v-model="currentPage[index]" :total-rows="subarray.length" :per-page="rows"
+                        aria-controls="my-table"></b-pagination>
+                </div>
             </div>
         </div>
     </div>
@@ -63,14 +70,22 @@ export default {
     data() {
         return {
             contenido: null,
+            fields: [
+                { key: 'd', label: 'd' },
+                { key: 'Mr', label: 'Mr' },
+                { key: 'E_solution', label: 'E_solution' },
+            ],
             boton4_contenido: 0,
             normalizacion_unidades: [],
             normalizacion_carga: [],
             normalizacion_temperatura: [],
             generatedInputs: [],
             geofonos: null,
-            distancia_D: null,
+            distancia_D: [],
+            currentPage: 1,
             inputValues: [],
+            rows: null
+
         }
     },
 
@@ -98,8 +113,12 @@ export default {
                 try {
                     const url = "http://127.0.0.1:5000/api/get_modulo_resiliente";
                     const response = await axios.get(url);
-                    console.log(response.data);
-                    this.distancia_D = JSON.parse(response.data.modulo_resiliente);
+                    //console.log(response.data);
+                    var object = response.data;
+                    this.distancia_D = Object.values(object)
+                    this.rows = this.distancia_D.length;
+                    console.log(this.distancia_D);
+                    this.currentPage = new Array(this.distancia_D.length).fill(1);
                     this.boton4_contenido = valor
                 } catch (error) {
                     console.error(error);

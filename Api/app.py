@@ -22,8 +22,7 @@ def get_data():
 
 def get_modulo_resiliente():
     modulo_resiliente = data.modulo_resiliente()
-    mensaje = {'modulo_resiliente': modulo_resiliente}
-    return mensaje
+    return modulo_resiliente
 
     
 @app.route('/api/cargar_csv', methods=['POST'])
