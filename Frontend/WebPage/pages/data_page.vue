@@ -51,7 +51,7 @@
             </div>
             <div v-else-if="boton4_contenido == 1">
                 <div v-for="(subarray, index) in distancia_D" :key="index">
-                    <h2>Modulo Resiliente {{ index + 2 }}</h2>
+                    <h2>Geofono {{ index + 2 }}</h2>
                     <b-table responsive :items="subarray" :fields="fields" :per-page="rows"
                         :current-page="currentPage[index]"></b-table>
                     <b-pagination v-model="currentPage[index]" :total-rows="subarray.length" :per-page="rows"
