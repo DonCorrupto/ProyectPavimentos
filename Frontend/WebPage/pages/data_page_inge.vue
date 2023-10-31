@@ -7,22 +7,7 @@
                 <h5>Cantidad de Geofonos: {{ geofonos }}</h5>
                 <li @click="cambiarContenido('boton1')" class="button">
                     <span class="text">
-                        Normalización por unidades
-                    </span>
-                </li>
-                <li @click="cambiarContenido('boton2')" class="button">
-                    <span class="text">
-                        Normalización por carga
-                    </span>
-                </li>
-                <li @click="cambiarContenido('boton3')" class="button">
-                    <span class="text">
-                        Normalización por temperatura
-                    </span>
-                </li>
-                <li @click="cambiarContenido('boton4')" class="button">
-                    <span class="text">
-                        Retro-Calculo
+                        Retro_Calculo
                     </span>
                 </li>
             </div>
@@ -31,16 +16,7 @@
 
         <!-- Contenido principal -->
         <div class="content">
-            <div v-if="contenido == 'boton1'">
-                <b-table responsive :items="normalizacion_unidades"></b-table>
-            </div>
-            <div v-if="contenido == 'boton2'">
-                <b-table responsive :items="normalizacion_carga"></b-table>
-            </div>
-            <div v-if="contenido == 'boton3'">
-                <b-table responsive :items="normalizacion_temperatura"></b-table>
-            </div>
-            <div v-if="contenido == 'boton4' && boton4_contenido == 0">
+            <div v-if="contenido == 'boton1' && boton4_contenido == 0">
                 <h2>Ingrese la distancia de cada geofono en pulgadas</h2>
                 <div v-for="(input, index) in distancia_D" :key="index + 2">
                     <input type="text" v-model="inputValues[index]" :name="`input_${index + 2}`"
@@ -50,13 +26,7 @@
                 <button @click="guardarValores(1)">Guardar Valores</button>
             </div>
             <div v-else-if="boton4_contenido == 1">
-                <div v-for="(subarray, index) in distancia_D" :key="index">
-                    <h2>Geofono {{ index + 2 }}</h2>
-                    <b-table responsive :items="subarray" :fields="fields" :per-page="rows"
-                        :current-page="currentPage[index]"></b-table>
-                    <b-pagination v-model="currentPage[index]" :total-rows="subarray.length" :per-page="rows"
-                        aria-controls="my-table"></b-pagination>
-                </div>
+                <b-table responsive :items="tabla_inge"></b-table>
             </div>
         </div>
     </div>
@@ -79,6 +49,7 @@ export default {
             normalizacion_unidades: [],
             normalizacion_carga: [],
             normalizacion_temperatura: [],
+            tabla_inge: [],
             generatedInputs: [],
             geofonos: null,
             distancia_D: [],
@@ -111,14 +82,11 @@ export default {
                     'success'
                 )
                 try {
-                    const url = "http://127.0.0.1:5000/api/get_modulo_resiliente";
+                    const url = "http://127.0.0.1:5000/api/tabla_inge";
                     const response = await axios.get(url);
                     //console.log(response.data);
-                    var object = response.data;
-                    this.distancia_D = Object.values(object)
-                    this.rows = this.distancia_D.length;
-                    console.log(this.distancia_D);
-                    this.currentPage = new Array(this.distancia_D.length).fill(1);
+                    console.log(response.data);
+                    this.tabla_inge = response.data
                     this.boton4_contenido = valor
                 } catch (error) {
                     console.error(error);

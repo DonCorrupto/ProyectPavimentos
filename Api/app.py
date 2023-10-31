@@ -24,6 +24,11 @@ def get_modulo_resiliente():
     modulo_resiliente = data.modulo_resiliente()
     return modulo_resiliente
 
+@app.route('/api/tabla_inge', methods=['GET'])
+def tabla_inge():
+    tabla_inge = data.retro_calculo_inge()
+    return tabla_inge
+
     
 @app.route('/api/cargar_csv', methods=['POST'])
 

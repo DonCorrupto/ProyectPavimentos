@@ -18,8 +18,11 @@
               <input type="file" ref="fileInput" accept=".csv">
               <br>
               <br>
-              <b-form @submit="onSubmit"><b-form-group id="input-group-1" label="temperatura:" label-for="input-1">
+              <b-form @submit="onSubmit"><b-form-group id="input-group-1" label="Temperatura:" label-for="input-1">
                   <b-form-select id="input-1" v-model="form.temperatura" :options="temperaturas" required></b-form-select>
+                </b-form-group><b-form-group id="input-group-2" label="Eliga que formato quieres ver:"
+                  label-for="input-2">
+                  <b-form-select id="input-2" v-model="form.persona" :options="personas" required></b-form-select>
                 </b-form-group>
                 <b-button type="submit" class="btn-block" pill variant="info">Submit</b-button></b-form>
 
@@ -41,7 +44,13 @@ export default {
     return {
       form: {
         temperatura: null,
+        persona: null,
+
       },
+      personas: [{ text: 'Seleccione una', value: null },
+      { text: 'Ingeniero', value: 1 },
+      { text: 'Estudiante', value: 2 }],
+
       temperaturas: [{ text: 'Seleccione una', value: null },
       { text: 'Pavimento asfáltico poco o nada fisurado, sobre una base granular: Si el espesor de la capa asfaltica es menor a 20cm  y la temperatura menor a 15 grados centigrados', value: 1 },
       { text: 'Pavimento poco asfáltico poco o nada fisurado, sobre una base granular estabilizada con ligante hidráulico', value: 2 },
@@ -57,6 +66,7 @@ export default {
       const fileInput = this.$refs.fileInput;
       const file = fileInput.files[0]; // Obtiene el primer archivo seleccionado
       const temperaturaValue = await this.form.temperatura
+      const personaValue = await this.form.persona
 
       if (file) {
         // Verifica que se haya seleccionado un archivo
@@ -79,9 +89,16 @@ export default {
               'Archivo CSV enviado correctamente.',
               'success'
             )
-            setTimeout(() => {
-              window.open("./data_page", "_self");
-            }, 1500);
+            if (personaValue != 1) {
+              setTimeout(() => {
+                window.open("./data_page", "_self");
+              }, 1500);
+            } else{
+              setTimeout(() => {
+                window.open("./data_page_inge", "_self");
+              }, 1500);
+            }
+
           } catch (error) {
             console.error('Error al enviar el archivo CSV:', error);
             this.$swal({

@@ -218,3 +218,153 @@ def modulo_resiliente():
 
     except FileNotFoundError:
         return None
+
+
+def retro_calculo_inge():
+    try:
+        with open('temperatura.txt', 'r') as file:
+            opcion = file.read()
+            opcion = int(opcion)
+            df = pd.read_pickle('dataframe.pkl')
+
+            columnas_con_D = [col for col in df.columns if col.startswith('D')]
+            numero_de_columnas_D = len(columnas_con_D) - 2
+            columnas_micras = [f'D{i}' for i in range(1, numero_de_columnas_D + 1)]
+
+            numero_de_columnas_D = columnas_micras
+            columnas_micras
+
+            for col in columnas_micras:
+                col_cm = col
+                df[col_cm] = df[col] / 10000
+
+            df_normalized = df.copy()
+
+            cols_to_normalize = numero_de_columnas_D
+
+            df_normalized[cols_to_normalize] = df[cols_to_normalize].div(40 / df['Carga'], axis=0)
+
+            def calcular_FT(row, opcion):
+                μ = -35.649 * (row['Espesor de capa de rodadura']) ** (-0.624)
+
+                if opcion == 1:
+                    FT = 1 / (1 + (8 * (10 ** (-4)) * row['Espesor de capa de rodadura'] * (row['T-Man'] - 20)))
+                elif opcion == 2:
+                    FT = (1.054) ** ((row['T-Man'] - 20) / μ)
+                elif opcion == 3:
+                    FT = 1
+                return FT
+            def aplicar_opcion(df_normalized, opcion):
+                df_normalized['FT'] = df_normalized.apply(lambda row: calcular_FT(row, opcion), axis=1)
+                for columna in numero_de_columnas_D:
+                    df_normalized[columna] = df_normalized['FT'] * df_normalized[columna]
+                return df_normalized
+            
+            dataframe_unificado = pd.DataFrame()
+
+            distancias = []
+            
+            if opcion == 1 or opcion == 2 or opcion == 3:
+                df_normalized = aplicar_opcion(df_normalized, opcion)
+
+
+                # Crea una lista para almacenar las distancias de los geófonos
+                with open('distancia_D.txt', 'r') as file:
+                    contenido = file.read()
+                    distancias = [int(numero) for numero in contenido.split(',')]
+
+                    columnas_D = sorted([col for col in df_normalized.columns if col.startswith('D')])
+
+                    # Encuentra el índice de la columna 'D2'
+                    indice_D2 = columnas_D.index('D2')
+
+
+                    # Realiza el cálculo y crea tablas separadas para cada columna D desde D2 hasta el penúltimo
+                    for i, columna_D in enumerate(columnas_D[indice_D2:-1], start=2):  # Comienza desde D2 hasta el penúltimo
+                        resultado = (2.4 * 40) / (df_normalized[columna_D] * distancias[i - 2] * 2.54)
+                        df_resultado = pd.DataFrame({f'Modulo resiliente {columna_D}': resultado})
+
+                        df_resultado.drop(columns=['Modulo resiliente Distancia'], inplace=True, errors='ignore')
+
+                        dataframe_unificado = pd.concat([dataframe_unificado, df_resultado], axis=1)
+
+
+            valores_columna_d1 = df_normalized['D1']
+
+            D = 90
+            a = 22.5
+            p = 0.2515
+
+            def solve_equation(d, Mr):
+                def equation(E):
+                    return 1.5 * p * a * ((1 / (Mr * math.sqrt(1 + (D / a * (E / Mr) ** (2/3)) ** 2))) + (1 - 1 / math.sqrt(1 + (D / a) ** 2)) / E ) - d
+                E_solution = newton(equation, x0=1)
+                return E_solution
+
+            # Función para calcular el número estructural
+            def calcular_ne(D, E_solution):
+                Ne = 0.02364 * D * (E_solution**(1/3))
+                return Ne
+
+            # Función para calcular el radio de tensiones del bulbo (ae)
+            def calcular_ae(D, E, Mr):
+                ae = math.sqrt(a ** 2 + (D * (E / Mr) ** (1/3)) ** 2)
+                return ae
+
+            # Inicializar el DataFrame geofonos_seleccionados
+            geofonos_seleccionados = pd.DataFrame()
+
+            # Iterar a través de dataframe_unificado
+            for column_name, distancia in zip(dataframe_unificado.columns, distancias):
+                Mr_values = dataframe_unificado[column_name]
+                solutions = []
+
+                distancia_column = df_normalized["Distancia"]
+
+                for d_value, Mr in zip(valores_columna_d1, Mr_values):
+                    E_solution = solve_equation(d_value, Mr)
+                    ne_value = calcular_ne(D, E_solution)
+                    ae_value = calcular_ae(D, E_solution, Mr)
+
+                    # Verificación
+                    if distancia >= 0.7 * ae_value:
+                        cumple_condicion = 'Cumple'
+                    else:
+                        cumple_condicion = 'No Cumple'
+
+                    solutions.append((d_value, Mr, E_solution, ne_value, ae_value, cumple_condicion, distancia_column))
+
+                if solutions:
+                    # DataFrame nuevo
+                    results_df = pd.DataFrame(solutions, columns=["D0", "Modulo resiliente", "Modulo de elasticidad", "Número estructural", "Radio de tensiones del bulbo (ae)", "Cumple Condición", "Absisado"])
+                    results_df["Absisado"] = distancia_column
+                    results_df['R'] = distancia
+
+                    # Agregar al DataFrame geofonos_seleccionados
+                    for absisado in results_df['Absisado'].unique():
+                        subset = results_df[results_df['Absisado'] == absisado]
+                        for _, row in subset.iterrows():
+                            if row["Cumple Condición"] == "Cumple":
+                                row_with_column = row.to_frame().T
+                                row_with_column['Column_Name'] = column_name
+                                geofonos_seleccionados = pd.concat([geofonos_seleccionados, row_with_column])
+
+            # Reiniciar los índices del DataFrame resultante
+            geofonos_seleccionados = geofonos_seleccionados.reset_index(drop=True)
+            geofonos_seleccionados = geofonos_seleccionados.sort_values(by=["Absisado", "Column_Name"])
+            geofonos_seleccionados = geofonos_seleccionados.drop_duplicates(subset=["Absisado"])
+
+            #print(geofonos_seleccionados)
+
+            json_data = geofonos_seleccionados.to_json(orient='records')
+
+            return json_data
+
+    except FileNotFoundError:
+        return None
+
+
+
+
+
+        
