@@ -10,7 +10,7 @@
                         Retro-Calculo
                     </span>
                 </li>
-                <li @click="cambiarContenido('boton2'), fetchImage()" class="button">
+                <li @click="getImage(), cambiarContenido('boton2')" class="button">
                     <span class="text">
                         Graficas
                     </span>
@@ -34,7 +34,7 @@
                 <b-table responsive :items="tabla_necesaria"></b-table>
             </div>
             <div v-if="contenido == 'boton2'">
-                <img v-if="imageLoaded" :src="imageSrc" alt="Imagen" />
+                <img v-if="imageSrc" :src="imageSrc" alt="Imagen" />
                 <div v-else>Cargando imagen...</div>
             </div>
         </div>
@@ -57,35 +57,27 @@ export default {
             inputValues: [],
             rows: null,
             imageSrc: null,
-            imageLoaded: false,
 
         }
     },
 
     beforeMount() {
         this.getData();
-        this.fetchImage();
     },
     methods: {
 
-        async fetchImage() {
-            try {
-                // Realizar la solicitud HTTP a la ruta de la imagen en Flask
-                const response = await this.$axios.get('http://127.0.0.1:5000/api/get_image', {
-                    responseType: 'arraybuffer', // Configurar el tipo de respuesta como arraybuffer
-                });
-
-                // Convertir la respuesta a una URL de datos (data URL)
-                const imageSrc = `data:image/png;base64,${btoa(
-                    new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
-                )}`;
-
-                // Actualizar el estado para mostrar la imagen
-                this.imageSrc = imageSrc;
-                this.imageLoaded = true;
-            } catch (error) {
-                console.error('Error al obtener la imagen:', error);
+        async getImage() {
+            if (this.boton1_contenido != 0) {
+                try {
+                    // Realizar la solicitud HTTP a la ruta de la imagen en Flask
+                    this.imageSrc = 'http://127.0.0.1:5000/api/get_image1';
+                } catch (error) {
+                    console.error('Error al obtener la imagen:', error);
+                }
+            } else {
+                alert("Ingresa las distancias primero")
             }
+
         },
 
         async guardarValores(valor) {

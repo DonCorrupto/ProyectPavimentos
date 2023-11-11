@@ -7,20 +7,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-
-@app.route('/api/get_image', methods=['GET'])
-def get_image():
-    # Ruta a la imagen en tu servidor
-    image_path = 'images/image1.png'
-
-    # Verificar si la imagen existe
-    if os.path.exists(image_path):
-        return send_file(image_path, mimetype='image/png')
-    else:
-        return 'Imagen no encontrada', 404
-    
-
-
 @app.route('/api/get_data', methods=['GET'])
 
 def get_data():
@@ -33,8 +19,20 @@ def get_data():
 
 def get_tabla():
     tabla = data.tabla()
-    return tabla
+    json_data = tabla.to_json(orient='records')
+    data.image()
+    return json_data
 
+@app.route('/api/get_image1', methods=['GET'])
+def get_image():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image1.jpg'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        return send_file(image_path, mimetype='image/jpeg')
+    else:
+        return 'Imagen no encontrada', 404
     
 @app.route('/api/cargar_csv', methods=['POST'])
 
