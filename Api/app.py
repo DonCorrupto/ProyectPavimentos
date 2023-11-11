@@ -19,18 +19,89 @@ def get_data():
 
 def get_tabla():
     tabla = data.tabla()
-    json_data = tabla.to_json(orient='records')
-    data.image()
-    return json_data
+    return tabla
 
 @app.route('/api/get_image1', methods=['GET'])
-def get_image():
+def get_image1():
     # Ruta a la imagen en tu servidor
     image_path = 'images/image1.jpg'
 
     # Verificar si la imagen existe
     if os.path.exists(image_path):
-        return send_file(image_path, mimetype='image/jpeg')
+        response = send_file(image_path, mimetype='image/jpeg')
+        response.headers['Content-Type'] = 'image/jpeg; charset=utf-8'
+
+        return response
+    else:
+        return 'Imagen no encontrada', 404
+    
+@app.route('/api/get_image2', methods=['GET'])
+def get_image2():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image2.jpg'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        response = send_file(image_path, mimetype='image/jpeg')
+        response.headers['Content-Type'] = 'image/jpeg; charset=utf-8'
+
+        return response
+    else:
+        return 'Imagen no encontrada', 404
+    
+@app.route('/api/get_image3', methods=['GET'])
+def get_image3():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image3.jpg'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        response = send_file(image_path, mimetype='image/jpeg')
+        response.headers['Content-Type'] = 'image/jpeg; charset=utf-8'
+
+        return response
+    else:
+        return 'Imagen no encontrada', 404
+    
+@app.route('/api/get_image4', methods=['GET'])
+def get_image4():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image4.jpg'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        response = send_file(image_path, mimetype='image/jpeg')
+        response.headers['Content-Type'] = 'image/jpeg; charset=utf-8'
+
+        return response
+    else:
+        return 'Imagen no encontrada', 404
+    
+@app.route('/api/get_image5', methods=['GET'])
+def get_image5():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image5.jpg'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        response = send_file(image_path, mimetype='image/jpeg')
+        response.headers['Content-Type'] = 'image/jpeg; charset=utf-8'
+
+        return response
+    else:
+        return 'Imagen no encontrada', 404
+    
+@app.route('/api/get_image6', methods=['GET'])
+def get_image6():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image6.jpg'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        response = send_file(image_path, mimetype='image/jpeg')
+        response.headers['Content-Type'] = 'image/jpeg; charset=utf-8'
+
+        return response
     else:
         return 'Imagen no encontrada', 404
     

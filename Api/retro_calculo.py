@@ -160,7 +160,7 @@ def tabla():
     geofonos_seleccionados = geofonos_seleccionados.sort_values(by=["Absisado", "Geofono seleccionado"])
     geofonos_seleccionados = geofonos_seleccionados.drop_duplicates(subset=["Absisado"])
 
-    columnas_a_eliminar = ["R", "D0", "Cumple Condición", "Radio de tensiones del bulbo (ae)", "Geofono seleccionado"]
+    columnas_a_eliminar = ["R", "D0", "Cumple Condición", "Radio de tensiones del bulbo (ae)"]
     geofonos_seleccionados = geofonos_seleccionados.drop(columns=columnas_a_eliminar)
     geofonos_seleccionados['Absisado'] = geofonos_seleccionados['Absisado'] / 1000
     geofonos_seleccionados['Diferencia'] = geofonos_seleccionados['Absisado'].diff()
@@ -188,12 +188,13 @@ def tabla():
 
     geofonos_seleccionados['Area acumulada Número estructural'] = geofonos_seleccionados['area del intervalo Número estructural'].cumsum()
 
-    return geofonos_seleccionados
+    geofonos_seleccionados_copy = geofonos_seleccionados.copy()
 
+    eliminar = ["Diferencia", "Distancia Acumulada", "Promedio de Parámetro Modulo Resiliente", "Promedio de Parámetro Modulo de elasticidad", "Promedio de Parámetro Número estructural", "area del intervalo_mr", "area del intervalo Modulo de elasticidad", "area del intervalo Número estructural", "Area acumulada_mr", "Area acumulada Modulo de elasticidad", "Area acumulada Número estructural"]
+    geofonos_seleccionados_copy = geofonos_seleccionados_copy.drop(columns=eliminar)
 
-def image():
+    json_data = geofonos_seleccionados_copy.to_json(orient='records')
 
-    geofonos_seleccionados = tabla()
     geofonos_seleccionados['Zx'] = geofonos_seleccionados['Area acumulada_mr'] - (8299.462892/40.4) * geofonos_seleccionados['Distancia Acumulada']
 
     geofonos_seleccionados['Zy'] = geofonos_seleccionados['Area acumulada Modulo de elasticidad'] - (23484.6702556/40.4) * geofonos_seleccionados['Distancia Acumulada']
@@ -253,3 +254,5 @@ def image():
     plt.grid(True)
     plt.legend()
     plt.savefig('images/image6.jpg')
+    
+    return json_data
