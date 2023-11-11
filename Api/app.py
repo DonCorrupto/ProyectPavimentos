@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import pandas as pd
 import retro_calculo as data
@@ -7,27 +7,33 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+
+@app.route('/api/get_image', methods=['GET'])
+def get_image():
+    # Ruta a la imagen en tu servidor
+    image_path = 'images/image1.png'
+
+    # Verificar si la imagen existe
+    if os.path.exists(image_path):
+        return send_file(image_path, mimetype='image/png')
+    else:
+        return 'Imagen no encontrada', 404
+    
+
+
 @app.route('/api/get_data', methods=['GET'])
 
 def get_data():
     geofonos = data.geofonos()
-    normalizacion_unidades = data.normalizacion_unidades()
-    normalizacion_carga = data.normalizacion_carga()
-    temperatura = data.obtener_temperatura_desde_archivo()
-    mensaje = {'geofonos': geofonos, 'normalizacion_unidades': normalizacion_unidades, 'normalizacion_carga': normalizacion_carga, 'normalizacion_temperatura': temperatura}
+    mensaje = {'geofonos': geofonos}
     return mensaje
 
 
-@app.route('/api/get_modulo_resiliente', methods=['GET'])
+@app.route('/api/get_tabla', methods=['GET'])
 
-def get_modulo_resiliente():
-    modulo_resiliente = data.modulo_resiliente()
-    return modulo_resiliente
-
-@app.route('/api/tabla_inge', methods=['GET'])
-def tabla_inge():
-    tabla_inge = data.retro_calculo_inge()
-    return tabla_inge
+def get_tabla():
+    tabla = data.tabla()
+    return tabla
 
     
 @app.route('/api/cargar_csv', methods=['POST'])

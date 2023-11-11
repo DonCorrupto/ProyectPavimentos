@@ -7,22 +7,12 @@
                 <h5>Cantidad de Geofonos: {{ geofonos }}</h5>
                 <li @click="cambiarContenido('boton1')" class="button">
                     <span class="text">
-                        Normalización por unidades
-                    </span>
-                </li>
-                <li @click="cambiarContenido('boton2')" class="button">
-                    <span class="text">
-                        Normalización por carga
-                    </span>
-                </li>
-                <li @click="cambiarContenido('boton3')" class="button">
-                    <span class="text">
-                        Normalización por temperatura
-                    </span>
-                </li>
-                <li @click="cambiarContenido('boton4')" class="button">
-                    <span class="text">
                         Retro-Calculo
+                    </span>
+                </li>
+                <li @click="cambiarContenido('boton2'), fetchImage()" class="button">
+                    <span class="text">
+                        Graficas
                     </span>
                 </li>
             </div>
@@ -31,16 +21,7 @@
 
         <!-- Contenido principal -->
         <div class="content">
-            <div v-if="contenido == 'boton1'">
-                <b-table responsive :items="normalizacion_unidades"></b-table>
-            </div>
-            <div v-if="contenido == 'boton2'">
-                <b-table responsive :items="normalizacion_carga"></b-table>
-            </div>
-            <div v-if="contenido == 'boton3'">
-                <b-table responsive :items="normalizacion_temperatura"></b-table>
-            </div>
-            <div v-if="contenido == 'boton4' && boton4_contenido == 0">
+            <div v-if="contenido == 'boton1' && boton1_contenido == 0">
                 <h2>Ingrese la distancia de cada geofono en pulgadas</h2>
                 <div v-for="(input, index) in distancia_D" :key="index + 2">
                     <input type="text" v-model="inputValues[index]" :name="`input_${index + 2}`"
@@ -49,14 +30,12 @@
                 <br>
                 <button @click="guardarValores(1)">Guardar Valores</button>
             </div>
-            <div v-else-if="boton4_contenido == 1">
-                <div v-for="(subarray, index) in distancia_D" :key="index">
-                    <h2>Geofono {{ index + 2 }}</h2>
-                    <b-table responsive :items="subarray" :fields="fields" :per-page="rows"
-                        :current-page="currentPage[index]"></b-table>
-                    <b-pagination v-model="currentPage[index]" :total-rows="subarray.length" :per-page="rows"
-                        aria-controls="my-table"></b-pagination>
-                </div>
+            <div v-else-if="boton1_contenido == 1">
+                <b-table responsive :items="tabla_necesaria"></b-table>
+            </div>
+            <div v-if="contenido == 'boton2'">
+                <img v-if="imageLoaded" :src="imageSrc" alt="Imagen" />
+                <div v-else>Cargando imagen...</div>
             </div>
         </div>
     </div>
@@ -70,29 +49,44 @@ export default {
     data() {
         return {
             contenido: null,
-            fields: [
-                { key: 'd', label: 'd' },
-                { key: 'Mr', label: 'Mr' },
-                { key: 'E_solution', label: 'E_solution' },
-            ],
-            boton4_contenido: 0,
-            normalizacion_unidades: [],
-            normalizacion_carga: [],
-            normalizacion_temperatura: [],
+            boton1_contenido: 0,
+            tabla_necesaria: [],
             generatedInputs: [],
             geofonos: null,
-            distancia_D: [],
             currentPage: 1,
             inputValues: [],
-            rows: null
+            rows: null,
+            imageSrc: null,
+            imageLoaded: false,
 
         }
     },
 
     beforeMount() {
         this.getData();
+        this.fetchImage();
     },
     methods: {
+
+        async fetchImage() {
+            try {
+                // Realizar la solicitud HTTP a la ruta de la imagen en Flask
+                const response = await this.$axios.get('http://127.0.0.1:5000/api/get_image', {
+                    responseType: 'arraybuffer', // Configurar el tipo de respuesta como arraybuffer
+                });
+
+                // Convertir la respuesta a una URL de datos (data URL)
+                const imageSrc = `data:image/png;base64,${btoa(
+                    new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
+                )}`;
+
+                // Actualizar el estado para mostrar la imagen
+                this.imageSrc = imageSrc;
+                this.imageLoaded = true;
+            } catch (error) {
+                console.error('Error al obtener la imagen:', error);
+            }
+        },
 
         async guardarValores(valor) {
             //console.log(this.inputValues);
@@ -111,15 +105,11 @@ export default {
                     'success'
                 )
                 try {
-                    const url = "http://127.0.0.1:5000/api/get_modulo_resiliente";
+                    const url = "http://127.0.0.1:5000/api/get_tabla";
                     const response = await axios.get(url);
-                    //console.log(response.data);
-                    var object = response.data;
-                    this.distancia_D = Object.values(object)
-                    this.rows = this.distancia_D.length;
-                    console.log(this.distancia_D);
-                    this.currentPage = new Array(this.distancia_D.length).fill(1);
-                    this.boton4_contenido = valor
+                    console.log(response.data);
+                    this.tabla_necesaria = response.data
+                    this.boton1_contenido = valor
                 } catch (error) {
                     console.error(error);
                 }
@@ -145,9 +135,6 @@ export default {
                 console.log(response.data);
                 this.geofonos = response.data.geofonos;
                 this.distancia_D = response.data.geofonos - 1;
-                this.normalizacion_unidades = JSON.parse(response.data.normalizacion_unidades)
-                this.normalizacion_carga = JSON.parse(response.data.normalizacion_carga)
-                this.normalizacion_temperatura = JSON.parse(response.data.normalizacion_temperatura)
             } catch (error) {
                 console.error(error);
             }
