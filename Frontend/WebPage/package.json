@@ -9,6 +9,7 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.4.2",
     "@nuxtjs/axios": "^5.13.6",
     "bootstrap": "^4.6.1",
     "bootstrap-vue": "^2.21.2",
@@ -17,12 +18,14 @@
     "nuxt": "^2.15.8",
     "vue": "^2.6.14",
     "vue-chartjs": "^5.2.0",
+    "vue-material-design-icons": "^5.2.0",
     "vue-server-renderer": "^2.6.14",
     "vue-sweetalert2": "^5.0.5",
     "vue-template-compiler": "^2.6.14",
     "webpack": "^4.46.0"
   },
   "devDependencies": {
+    "@nuxtjs/google-fonts": "^3.0.2",
     "sass": "^1.67.0"
   }
 }
