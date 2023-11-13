@@ -3,37 +3,11 @@
     <div
       style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background-image: url('https://excavacionesgrasa.com/wp-content/uploads/2022/02/Pavimentos-rigidos-y-pavimentos-flexibles.jpg'); background-size: cover; background-position: center;">
       <div style="text-align: center;">
-        <h2 style="color: white;">Automatiza tus Retro-Calculos con nuestra herramientas para que tus pavimentos queden
-          como los de Chile</h2>
+        <h2 style="color: white;">Automatiza tus Retro-Calculos con nuestra herramienta</h2>
         <br>
         <div>
           <b-button id="show-btn" @click="$bvModal.show('bv-modal-example')" pill variant="warning">Ingrese tu
             archivo</b-button>
-          <br>
-          <br>
-          <b-button pill variant="info" v-b-modal.modal-xl>
-            <i class="fa-solid fa-question"></i>
-          </b-button>
-          <b-modal id="modal-xl" size="xl" title="Ayuda!"><b-carousel id="carousel-1" v-model="slide" :interval="4000"
-              controls indicators background="#ababab" img-width="1024" img-height="480"
-              style="text-shadow: 1px 1px 2px #333;" @sliding-start="onSlideStart" @sliding-end="onSlideEnd">
-              <!-- Text slides with image -->
-              <b-carousel-slide img-src="https://i.postimg.cc/4N37ZYMC/image1.png">
-                <h4 style="color: #333;">Ingrese el excel que quieres analizar. Recuerda que debe tener formato CSV y selecciona una de las tres opciones para el ajuste por temperatura.</h4>
-              </b-carousel-slide>
-
-              <!-- Slides with custom text -->
-              <b-carousel-slide img-src="https://i.postimg.cc/TwR29Sv8/image2.png">
-                <h4 style="color: white;">En la opcion del Retro-Calculo, debes de poner la distancia de los geofonos respecto al primer geofono.</h4>
-              </b-carousel-slide>
-
-              <!-- Slides with image only -->
-              <b-carousel-slide img-src="https://i.postimg.cc/6qqWsvQY/image3.png">
-                <h4 style="color: #333;">Debes primero ingresar las distancias de los geofonos para poder visualizar las graficas.</h4>
-              </b-carousel-slide>
-
-            </b-carousel></b-modal>
-
           <b-modal id="bv-modal-example" hide-footer size="xl">
             <template #modal-title>
               Formato CSV
@@ -45,7 +19,7 @@
               <b-form @submit="onSubmit"><b-form-group id="input-group-1" label="Temperatura:" label-for="input-1">
                   <b-form-select id="input-1" v-model="form.temperatura" :options="temperaturas" required></b-form-select>
                 </b-form-group>
-                <b-button type="submit" class="btn-block" pill variant="info">Submit</b-button></b-form>
+                <b-button type="submit" class="btn-block" pill variant="info">Analizar</b-button></b-form>
 
               <br>
               <br>

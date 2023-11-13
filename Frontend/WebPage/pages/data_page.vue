@@ -33,7 +33,7 @@
                 </b-card>
             </div>
             <div v-else-if="contenido == 'boton3'">
-                <b-table responsive :items="tabla_necesaria"></b-table>
+                <b-table responsive striped hover :items="tabla_necesaria"></b-table>
             </div>
             <div v-if="contenido == 'boton2'">
                 <div v-if="loadedImage == true">
